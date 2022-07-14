@@ -1,9 +1,10 @@
 import { Box, Button, TextField } from "@mui/material";
 import { FormEvent } from "react";
-import { InputProps } from "../interface";
+import { useDispatch } from "react-redux";
+import { changeCountry } from "../store/reducers/countryReducer";
 
-const InputSearch = (props: InputProps) => {
-  const { setCountry } = props;
+const InputSearch = () => {
+  const dispatch = useDispatch();
 
   //The function get the value of input
   const searchCountry = (e: FormEvent<HTMLFormElement>) => {
@@ -13,7 +14,9 @@ const InputSearch = (props: InputProps) => {
       "input[name=searchInput]"
     ) as HTMLInputElement;
 
-    setCountry(inputSearch.value);
+    dispatch(changeCountry(inputSearch.value));
+
+    inputSearch.value = "";
   };
 
   return (

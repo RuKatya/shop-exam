@@ -1,8 +1,13 @@
 import { Box, Slider, Typography } from "@mui/material";
-import { SliderProps } from "../interface";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  changePopulation,
+  selectPopulation,
+} from "../store/reducers/populationReducer";
 
-const SliderInput = (props: SliderProps) => {
-  const { numberOfPopulation, setNumberOfPopulation } = props;
+const SliderInput = () => {
+  const dispatch = useDispatch();
+  const numberOfPopulation = useSelector(selectPopulation);
 
   //Show the current value of slider
   function valuetext(numberOfPopulation: number) {
@@ -11,7 +16,7 @@ const SliderInput = (props: SliderProps) => {
 
   //Change the value of min/max populatuib
   const handleChange = (event: Event, newValue: number | number[]) => {
-    setNumberOfPopulation(newValue as number[]);
+    dispatch(changePopulation(newValue as number[]));
   };
 
   return (

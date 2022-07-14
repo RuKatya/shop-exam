@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react"; //REACT
+import { useCallback, useEffect, useState } from "react"; //REACT
 import axios from "axios"; //AXIOS
 import InputSearch from "./Components/InputSearch"; //COMPONENTS
 import SliderInput from "./Components/SliderInput";
 import { Pagination, RowData, Sort } from "./interface"; //IMTERFACE
 import { Box } from "@mui/material"; //MUI
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useSelector } from "react-redux";
+import { selectCountry } from "./store/reducers/countryReducer";
+import { selectPopulation } from "./store/reducers/populationReducer";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "item-id", width: 90 },
@@ -25,12 +28,10 @@ const columns: GridColDef[] = [
 ];
 
 function DataTableWrapper() {
+  const country = useSelector(selectCountry);
+  const numberOfPopulation = useSelector(selectPopulation);
   const [rowData, setRowData] = useState<Array<RowData>>([]);
   const [totalCount, settTotalCount] = useState<number>(0);
-  const [country, setCountry] = useState<string>("IL");
-  const [numberOfPopulation, setNumberOfPopulation] = useState<number[]>([
-    0, 500,
-  ]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 3,
     page_size: [3, 5, 10],
@@ -40,10 +41,17 @@ function DataTableWrapper() {
     sort_direction: "asc",
   });
 
+  // const filtered = (value: any) => value.countryCode === country;
+
+  const filtered = useCallback(
+    (value: any) => value.countryCode === country,
+    [country]
+  );
+
   useEffect(() => {
     const getData = async (
       pagination: Pagination,
-      // filters: Object,
+      filters: Object,
       sorting: Sort
     ) => {
       const options = {
@@ -66,36 +74,30 @@ function DataTableWrapper() {
         .request(options)
         .then(function (response) {
           const countRow = response.data;
-          // setAllDaya(countRow);
-          console.log(countRow.metadata.totalCount);
-          settTotalCount(countRow.metadata.totalCount);
           const { data } = response.data;
-
           console.log(data);
+          const filteredData = data.filter(filters);
 
-          // // console.log(filteredData);
-          // console.log(data);
+          console.log(filteredData);
 
-          // // setRowData(filteredData);
-          setRowData(data);
-          // setPagination(pagination);
+          setRowData(filteredData);
+          setPagination(pagination);
+          setSortData(sorting);
+          settTotalCount(countRow.metadata.totalCount);
         })
         .catch(function (error) {
           console.error(error);
         });
     };
 
-    getData(pagination, sortData);
-  }, [numberOfPopulation, country, sortData, pagination]);
+    getData(pagination, filtered, sortData);
+  }, [numberOfPopulation, country, sortData, filtered, pagination]);
 
   return (
     <Box className="tableWrapper">
       <Box className="tableWrapper__filters">
-        <SliderInput
-          numberOfPopulation={numberOfPopulation}
-          setNumberOfPopulation={setNumberOfPopulation}
-        />
-        <InputSearch setCountry={setCountry} />
+        <SliderInput />
+        <InputSearch />
       </Box>
 
       <Box sx={{ height: 400, width: "100%" }}>

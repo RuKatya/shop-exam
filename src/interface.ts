@@ -1,12 +1,3 @@
-export interface InputProps {
-    setCountry: Function
-}
-
-export interface SliderProps {
-    numberOfPopulation: number[]
-    setNumberOfPopulation: Function
-}
-
 export interface RowData {
     id: string;
     country: string;
