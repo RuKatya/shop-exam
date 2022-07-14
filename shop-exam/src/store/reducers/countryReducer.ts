@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 interface CountryState {
-    location: string
+    value: string
 }
 
 const initialState: CountryState = {
-    location: "AF"
+    value: "AF"
 }
 
 export const countrySlice = createSlice({
@@ -13,7 +13,7 @@ export const countrySlice = createSlice({
     initialState,
     reducers: {
         changeCountry: (state, action) => {
-            state.location = action.payload
+            state.value = action.payload
         }
     }
 })
@@ -24,6 +24,6 @@ interface State {
     country: CountryState
 }
 
-export const selectCountry = (state: State) => state.country.location
+export const selectCountry = (state: State) => state.country.value
 
 export default countrySlice.reducer

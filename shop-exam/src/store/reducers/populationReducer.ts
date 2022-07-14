@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface PopulationState {
-  number: Array<number>;
+  value: Array<number>;
 }
 
 const initialState: PopulationState = {
-  number: [0, 500],
+  value: [0, 500],
 };
 
 export const populationSlice = createSlice({
@@ -13,7 +13,7 @@ export const populationSlice = createSlice({
   initialState,
   reducers: {
     changePopulation: (state, action) => {
-      state.number = action.payload;
+      state.value = action.payload;
     },
   },
 });
@@ -24,6 +24,6 @@ interface State {
   population: PopulationState;
 }
 
-export const selectPopulation = (state: State) => state.population.number;
+export const selectPopulation = (state: State) => state.population.value;
 
 export default populationSlice.reducer;

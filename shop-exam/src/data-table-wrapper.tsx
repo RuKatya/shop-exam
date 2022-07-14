@@ -2,16 +2,33 @@ import { useCallback, useEffect, useState } from "react"; //REACT
 import axios from "axios"; //AXIOS
 import InputSearch from "./Components/InputSearch"; //COMPONENTS
 import SliderInput from "./Components/SliderInput";
-import { Pagination, RowData, Sort } from "./interface"; //INTERFACE
-import { columns } from "./columnTitle"; //COLUMNS
+import { Pagination, RowData, Sort } from "./interface"; //IMTERFACE
 import { Box } from "@mui/material"; //MUI
-import { DataGrid } from "@mui/x-data-grid";
-import { useSelector } from "react-redux"; //REDUX
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useSelector } from "react-redux";
 import { selectCountry } from "./store/reducers/countryReducer";
 import { selectPopulation } from "./store/reducers/populationReducer";
 
+const columns: GridColDef[] = [
+  { field: "id", headerName: "item-id", width: 90 },
+  { field: "country", headerName: "country", width: 100 },
+  { field: "countryCode", headerName: "countryCode", width: 150 },
+  { field: "latitude", headerName: "latitude", width: 100, type: "number" },
+  { field: "longitude", headerName: "longitude", width: 160, type: "number" },
+  { field: "name", headerName: "name", width: 160 },
+  {
+    field: "population",
+    headerName: "population",
+    width: 160,
+    type: "number",
+  },
+  { field: "region", headerName: "region", width: 160 },
+  { field: "regionCode", headerName: "regionCode", width: 160 },
+  { field: "wikiDataId", headerName: "wikiDataId", width: 160 },
+];
+
 function DataTableWrapper() {
-  const countryCode = useSelector(selectCountry);
+  const country = useSelector(selectCountry);
   const numberOfPopulation = useSelector(selectPopulation);
   const [rowData, setRowData] = useState<Array<RowData>>([]);
   const [totalCount, settTotalCount] = useState<number>(0);
@@ -23,9 +40,12 @@ function DataTableWrapper() {
     field_name: "name",
     sort_direction: "asc",
   });
+
+  // const filtered = (value: any) => value.countryCode === country;
+
   const filtered = useCallback(
-    (location: RowData) => location.countryCode === countryCode,
-    [countryCode]
+    (value: any) => value.countryCode === country,
+    [country]
   );
 
   useEffect(() => {
@@ -41,7 +61,7 @@ function DataTableWrapper() {
           maxPopulation: numberOfPopulation[1],
           minPopulation: numberOfPopulation[0],
           sort: sorting.field_name,
-          countryIds: countryCode,
+          countryIds: country,
         },
         headers: {
           "X-RapidAPI-Key":
@@ -55,7 +75,11 @@ function DataTableWrapper() {
         .then(function (response) {
           const countRow = response.data;
           const { data } = response.data;
+          console.log(data);
           const filteredData = data.filter(filters);
+
+          console.log(filteredData);
+
           setRowData(filteredData);
           setPagination(pagination);
           setSortData(sorting);
@@ -67,7 +91,7 @@ function DataTableWrapper() {
     };
 
     getData(pagination, filtered, sortData);
-  }, [numberOfPopulation, countryCode, sortData, filtered, pagination]);
+  }, [numberOfPopulation, country, sortData, filtered, pagination]);
 
   return (
     <Box className="tableWrapper">
